@@ -105,6 +105,19 @@ public class AuthServiceImpl implements IAuthService {
         sendCodeEmail(user, type, rawCode);
     }
 
+    private String issueCode(User user, VerificationCodeType type) {
+        String rawCode = generateVerificationCodeValue();
+
+        VerificationCode code = new VerificationCode();
+        code.setUser(user);
+        code.setType(type);
+        code.setCodeHash(passwordEncoder.encode(rawCode));
+        code.setExpiresAt(Instant.now().plusSeconds(900));
+        verificationCodeRepository.save(code);
+
+        return rawCode;
+    }
+
     @Transactional
     @Override
     public void updatePassword(UUID userId, ChangePasswordRequest request) {
