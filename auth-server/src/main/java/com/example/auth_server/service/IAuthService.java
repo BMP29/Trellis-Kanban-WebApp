@@ -11,10 +11,6 @@ import java.util.UUID;
 public interface IAuthService {
     public void register(UserRegistrationRequest data);
     public void verify(VerifyUserRequestDto data);
-//
-//    public void sendEmailUpdatePassword(User user);
-//    public void sendEmailUpdateUsername(User user);
-//    public void sendEmailUpdateCode(User user);
 
     public void sendVerificationEmail(User user, VerificationCodeType type);
 
