@@ -175,9 +175,19 @@ public class AuthServiceImpl implements IAuthService {
         sendAccountDeletionEmail(user);
     }
 
+    @Transactional
     @Override
     public void updateEmail(UUID userId, String newEmail) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
 
+        String normalizedEmail = newEmail.toLowerCase();
+
+        if (userRepository.existsByEmail(normalizedEmail)) {
+            throw new EmailAlreadyInUseException();
+        }
+
+        user.setEmail(normalizedEmail);
     }
 
     private EmailTemplate templateFor(VerificationCodeType type) {
