@@ -9,8 +9,8 @@ import com.example.auth_server.enums.VerificationCodeType;
 import java.util.UUID;
 
 public interface IAuthService {
-    public void register(UserRegistrationRequest data);
-    public void verify(VerifyUserRequestDto data);
+    void register(UserRegistrationRequest data);
+    void verify(VerifyUserRequestDto data);
 
     public void sendVerificationEmail(User user, VerificationCodeType type);
 
