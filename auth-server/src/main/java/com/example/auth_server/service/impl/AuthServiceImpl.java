@@ -239,7 +239,7 @@ public class AuthServiceImpl implements IAuthService {
         };
     }
 
-    private String buildCodeEmailText(VerificationCodeType type, String code, EmailTemplate t) {
+    private String buildCodeEmailText(String code, EmailTemplate t) {
         String infoBox = t.infoWarning() == null ? "" :
                 "<div style=\"background-color: #FFD23F; border: 3px solid #111111; padding: 12px 16px; margin-bottom: 16px;\">"
                 + "<p style=\"margin: 0; font-size: 13px; font-weight: 700; color: #111111;\">" + t.infoWarning() + "</p>"
