@@ -10,11 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface VerificationCodeRepository extends JpaRepository<VerificationCode, UUID> {
-    boolean existsByUserAndType(
-            User user,
-            VerificationCodeType type
-    );
-
     boolean existsByUserAndTypeAndConsumedAtIsNullAndExpiresAtAfter(
             User user, VerificationCodeType type, Instant now);
 
