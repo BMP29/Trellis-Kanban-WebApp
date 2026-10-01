@@ -3,6 +3,7 @@ package com.example.auth_server.service;
 import com.example.auth_server.dto.UserRegistrationRequest;
 import com.example.auth_server.entity.User;
 import com.example.auth_server.enums.VerificationCodeType;
+import com.example.auth_server.exception.EmailAlreadyInUseException;
 import com.example.auth_server.exception.UserNotFoundException;
 import com.example.auth_server.repository.UserRepository;
 import com.example.auth_server.repository.VerificationCodeRepository;
@@ -64,7 +65,7 @@ public class AuthServiceTest {
                 new UserRegistrationRequest("newuser", "password", "mail@email.com");
 
         assertThrows(
-                RuntimeException.class,
+                EmailAlreadyInUseException.class,
                 () -> authService.register(data)
         );
     }
