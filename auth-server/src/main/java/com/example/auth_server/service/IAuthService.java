@@ -12,7 +12,7 @@ public interface IAuthService {
     void register(UserRegistrationRequest data);
     void verify(VerifyUserRequestDto data);
 
-    void sendVerificationEmail(User user, VerificationCodeType type);
+    void sendVerificationEmail(String username, VerificationCodeType type);
 
     void updatePassword(UUID userId, ChangePasswordRequest request);
     void updateUsername(UUID userId, String newUsername);
