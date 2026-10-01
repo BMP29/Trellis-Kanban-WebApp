@@ -2,9 +2,7 @@ package com.example.auth_server.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -45,16 +43,6 @@ public class User implements UserDetails {
     @NotNull
     @Column
     private boolean enabled = false;
-
-    @Column
-    private String verificationCode;
-    @Column
-    private Instant verificationCodeExpiresAt;
-
-    @Column
-    private String deleteAccountCode;
-    @Column
-    private Instant deleteAccountCodeExpiresAt;
 
     @CreationTimestamp
     private Instant createdAt;
