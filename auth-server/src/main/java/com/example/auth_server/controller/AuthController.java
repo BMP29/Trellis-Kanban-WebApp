@@ -41,6 +41,16 @@ public class AuthController {
         authService.sendDeletionCode(user);
     }
 
+    @PostMapping("/username/request")
+    public ResponseEntity<Void> requestUsernameChange(@AuthenticationPrincipal Jwt jwt) {
+        authService.sendVerificationEmail(
+                jwt.getSubject(),
+                VerificationCodeType.USERNAME_CHANGE
+        );
+
+        return ResponseEntity.accepted().build();
+    }
+
     @PatchMapping("/password")
     public ResponseEntity<Void> updatePassword(
             @AuthenticationPrincipal User user,
