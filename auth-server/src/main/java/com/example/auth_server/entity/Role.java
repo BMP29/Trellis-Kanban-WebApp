@@ -1,10 +1,14 @@
 package com.example.auth_server.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Role {
 
     @Id
