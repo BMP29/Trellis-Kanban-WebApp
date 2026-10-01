@@ -60,16 +60,14 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private Instant lastUpdateAt;
 
-
-    //for later
-//    @ManyToMany
-//    @JoinTable(
-//            name = "users_roles",
-//            joinColumns = @JoinColumn(
-//                    name = "user_id", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(
-//                    name = "role_id", referencedColumnName = "id"))
-//    private Collection<Role> roles;
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "id"))
+    private Collection<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
