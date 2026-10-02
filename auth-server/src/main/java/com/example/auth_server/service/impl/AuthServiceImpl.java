@@ -140,42 +140,30 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     @Override
-    public void updateUsername(UUID userId, String newUsername) {
-        User user = userRepository.findById(userId)
+    public void updateUsername(String username, ChangeUsernameRequest request) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(UserNotFoundException::new);
 
-        if(userRepository.existsByUsername(newUsername)) {
+        if(userRepository.existsByUsername(request.newUsername())) {
           throw new UsernameAlreadyInUseException();
         }
 
-        user.setUsername(newUsername);
-    }
+        VerificationCode code = verificationCodeRepository
+                .findFirstByUserAndTypeAndConsumedAtIsNullOrderByExpiresAtDesc(
+                        user, VerificationCodeType.USERNAME_CHANGE)
+                .orElseThrow(VerificationCodeNotFoundException::new);
 
-
-    //delete in the future
-    @Override
-    public void sendDeletionCode(User user) {
-        if (!user.isEnabled()) {
-            throw new IllegalStateException("User is not enabled");
+        if(code.getExpiresAt().isBefore(Instant.now())) {
+            throw new ExpiredVerificationCodeException("Código de verificação expirou.");
         }
 
-        Instant expiresAt = user.getDeleteAccountCodeExpiresAt();
-
-        if (expiresAt != null && expiresAt.isAfter(Instant.now())) {
-            throw new RuntimeException(
-                    "Please wait until the current code expires before requesting another."
-            );
+        if(!passwordEncoder.matches(request.code(), code.getCodeHash())) {
+            throw new VerificationCodeNotFoundException();
         }
 
-        SecureRandom random = new SecureRandom();
-        String code = String.valueOf(100000 + random.nextInt(900000));
+        code.setConsumedAt(Instant.now());
 
-        user.setDeleteAccountCode(code);
-        user.setDeleteAccountCodeExpiresAt(
-                Instant.now().plusSeconds(900)
-        );
-
-        sendAccountDeletionEmail(user);
+        user.setUsername(request.newUsername());
     }
 
     @Transactional
