@@ -39,20 +39,15 @@ public class AuthServiceImpl implements IAuthService {
             throw new UsernameAlreadyInUseException("User already exists");
         }
 
-        String verificationCode = generateVerificationCode();
-
+        User user = new User();
         user.setUsername(data.username());
         user.setPassword(passwordEncoder.encode(data.password()));
         user.setEmail(data.email());
         user.setPfpPath("./");
         user.setEnabled(false);
-        user.setVerificationCode(verificationCode);
-        user.setVerificationCodeExpiresAt(Instant.now().plusSeconds(900));
-        user.setDeleteAccountCodeExpiresAt(null);
-        user.setDeleteAccountCode(null);
-        sendCodeEmail(user, VerificationCodeType.ACCOUNT_VERIFICATION, verificationCode);
-
         userRepository.save(user);
+
+        sendVerificationEmail(user.getUsername(), VerificationCodeType.ACCOUNT_VERIFICATION);
     }
 
     @Transactional
