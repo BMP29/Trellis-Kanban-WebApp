@@ -5,6 +5,7 @@ import com.example.auth_server.entity.User;
 import com.example.auth_server.enums.VerificationCodeType;
 import com.example.auth_server.exception.EmailAlreadyInUseException;
 import com.example.auth_server.exception.UserNotFoundException;
+import com.example.auth_server.exception.UsernameAlreadyInUseException;
 import com.example.auth_server.repository.UserRepository;
 import com.example.auth_server.repository.VerificationCodeRepository;
 import org.junit.jupiter.api.Test;
@@ -75,4 +76,24 @@ public class AuthServiceTest {
         );
     }
 
+    @Test
+    @Transactional
+    void register_ThrowsException_WhenUsernameAlreadyExists() {
+        User existingUser = new User();
+        existingUser.setUsername("existing");
+        existingUser.setEmail("mail@email.com");
+        existingUser.setPassword("password");
+        existingUser.setPfpPath("./");
+        existingUser.setEnabled(false);
+
+        userRepository.save(existingUser);
+
+        UserRegistrationRequest data =
+                new UserRegistrationRequest("existing", "password", "newmail@email.com");
+
+        assertThrows(
+                UsernameAlreadyInUseException.class,
+                () -> authService.register(data)
+        );
+    }
 }
