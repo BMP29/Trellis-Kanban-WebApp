@@ -30,8 +30,13 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<Void> verifyUser(@Valid @RequestBody VerifyUserRequestDto data) {
-        this.authService.verify(data);
+    public ResponseEntity<Void> verifyUser(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody VerifyUserRequestDto request) {
+        this.authService.verify(
+                jwt.getSubject(),
+                request.verificationCode()
+        );
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
