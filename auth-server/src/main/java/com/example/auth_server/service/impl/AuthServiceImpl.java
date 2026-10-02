@@ -1,9 +1,6 @@
 package com.example.auth_server.service.impl;
 
-import com.example.auth_server.dto.ChangePasswordRequest;
-import com.example.auth_server.dto.EmailTemplate;
-import com.example.auth_server.dto.UserRegistrationRequest;
-import com.example.auth_server.dto.VerifyUserRequestDto;
+import com.example.auth_server.dto.*;
 import com.example.auth_server.entity.User;
 import com.example.auth_server.entity.VerificationCode;
 import com.example.auth_server.enums.VerificationCodeType;
@@ -14,12 +11,12 @@ import com.example.auth_server.service.IAuthService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -82,27 +79,37 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     @Override
-    public void sendVerificationEmail(User user, VerificationCodeType type) {
-        if (!user.isEnabled()) {
+    public void sendVerificationEmail(String username, VerificationCodeType type) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found: " + username
+                        ));
+
+        if(type != VerificationCodeType.ACCOUNT_VERIFICATION && !user.isEnabled()) {
             throw new IllegalStateException("User is not enabled");
         }
 
-        if(verificationCodeRepository
-                .existsByUserAndType(user, type)) {
-            throw new InvalidVerificationCodeException(
-                    "Please wait until the current " + type + " code expires before requesting another."
-            );
+        if(verificationCodeRepository.existsByUserAndTypeAndConsumedAtIsNullAndExpiresAtAfter(
+                user, type, Instant.now())) {
+            throw new VerificationCodeNotFoundException(
+                    "Please wait until the current " + type + " code expires before requesting another.");
         }
 
-        String rawCode = generateVerificationCode();
-        VerificationCode code = new VerificationCode();
+        String rawCode = issueCode(user, type);
 
-        code.setUser(user);
-        code.setExpiresAt(Instant.now().plusSeconds(900));
-        code.setType(type);
-        code.setCodeHash(passwordEncoder.encode(rawCode));
+        EmailTemplate template = templateFor(type);
+        String htmlMessage = buildCodeEmailText(rawCode, template);
 
-        sendCodeEmail(user, type, rawCode);
+        try {
+            emailService.sendEmail(
+                    user.getEmail(),
+                    template.subject(),
+                    htmlMessage
+            );
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send verification email", e);
+        }
     }
 
     private String issueCode(User user, VerificationCodeType type) {
