@@ -34,11 +34,11 @@ public class AuthServiceImpl implements IAuthService {
         User user = new User();
 
         if(userRepository.existsByEmail(data.email())) {
-            throw new RuntimeException("Email already in use");
+            throw new EmailAlreadyInUseException("Email already in use");
         }
 
         if(userRepository.existsByUsername(data.username())) {
-            throw new RuntimeException("User already exists");
+            throw new UsernameAlreadyInUseException("User already exists");
         }
 
         String verificationCode = generateVerificationCode();
