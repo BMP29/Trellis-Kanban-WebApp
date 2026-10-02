@@ -68,10 +68,10 @@ public class AuthController {
 
     @PatchMapping("/username")
     public ResponseEntity<Void> updateUsername(
-            @AuthenticationPrincipal User user,
-            @RequestBody String newUsername
-    ) {
-        authService.updateUsername(user.getId(), newUsername);
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody ChangeUsernameRequest request
+            ) {
+        authService.updateUsername(jwt.getSubject(), request);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
