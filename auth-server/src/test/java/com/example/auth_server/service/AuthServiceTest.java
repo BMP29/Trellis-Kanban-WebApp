@@ -7,7 +7,6 @@ import com.example.auth_server.exception.EmailAlreadyInUseException;
 import com.example.auth_server.exception.UserNotFoundException;
 import com.example.auth_server.repository.UserRepository;
 import com.example.auth_server.repository.VerificationCodeRepository;
-import com.example.auth_server.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,11 +57,17 @@ public class AuthServiceTest {
         existingUser.setUsername("existing");
         existingUser.setEmail("mail@email.com");
         existingUser.setPassword("password");
+        existingUser.setPfpPath("./");
+        existingUser.setEnabled(false);
 
         userRepository.save(existingUser);
 
         UserRegistrationRequest data =
-                new UserRegistrationRequest("newuser", "password", "mail@email.com");
+                new UserRegistrationRequest(
+                        "newuser",
+                        "password",
+                        "mail@email.com"
+                );
 
         assertThrows(
                 EmailAlreadyInUseException.class,
