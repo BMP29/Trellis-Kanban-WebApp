@@ -63,19 +63,22 @@ public class AuthServiceImpl implements IAuthService {
         User user = userRepository.findByEmail(data.email())
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o e-mail: " + data.email()));
 
-        if(user.getVerificationCodeExpiresAt().isBefore(Instant.now())) {
+        VerificationCode code = verificationCodeRepository
+                .findFirstByUserAndTypeAndConsumedAtIsNullOrderByExpiresAtDesc(
+                        user, VerificationCodeType.ACCOUNT_VERIFICATION)
+                .orElseThrow(() -> new VerificationCodeNotFoundException("Invalid verification code"));
+
+        if(code.getExpiresAt().isBefore(Instant.now())) {
             throw new ExpiredVerificationCodeException("Código de verificação expirou.");
         }
 
-        if (!Objects.equals(data.verificationCode(), user.getVerificationCode())) {
-            throw new InvalidVerificationCodeException("Invalid verification code");
+        if(!passwordEncoder.matches(data.verificationCode(), code.getCodeHash())) {
+            throw new VerificationCodeNotFoundException("Invalid verification code");
         }
 
+        code.setConsumedAt(Instant.now());
         user.setEnabled(true);
-        user.setVerificationCode(null);
-        user.setVerificationCodeExpiresAt(null);
     }
-
 
     @Transactional
     @Override
