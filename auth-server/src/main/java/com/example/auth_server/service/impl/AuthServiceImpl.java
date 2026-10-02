@@ -128,7 +128,7 @@ public class AuthServiceImpl implements IAuthService {
                 .orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new IncorrectCurrentPasswordException();
+            throw new IncorrectPasswordException();
         }
 
         if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
