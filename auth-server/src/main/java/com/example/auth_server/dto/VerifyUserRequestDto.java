@@ -1,7 +1,9 @@
 package com.example.auth_server.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record VerifyUserRequestDto(
-        String email,
+        @NotBlank(message = "Code must not be empty")
         String verificationCode
 ) {
 }
