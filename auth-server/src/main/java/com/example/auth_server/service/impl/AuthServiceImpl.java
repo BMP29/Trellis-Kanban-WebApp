@@ -28,11 +28,9 @@ public class AuthServiceImpl implements IAuthService {
     private PasswordEncoder passwordEncoder;
     private EmailServiceImpl emailService;
 
-
+    @Transactional
     @Override
     public void register(UserRegistrationRequest data) {
-        User user = new User();
-
         if(userRepository.existsByEmail(data.email())) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
