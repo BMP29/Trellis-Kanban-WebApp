@@ -55,9 +55,9 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     @Override
-    public void verify(VerifyUserRequestDto data) {
-        User user = userRepository.findByEmail(data.email())
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o e-mail: " + data.email()));
+    public void verify(String username, String verificationCode) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Usuário com username: " + username + " não encontrado."));
 
         VerificationCode code = verificationCodeRepository
                 .findFirstByUserAndTypeAndConsumedAtIsNullOrderByExpiresAtDesc(
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements IAuthService {
             throw new ExpiredVerificationCodeException("Código de verificação expirou.");
         }
 
-        if(!passwordEncoder.matches(data.verificationCode(), code.getCodeHash())) {
+        if(!passwordEncoder.matches(verificationCode, code.getCodeHash())) {
             throw new VerificationCodeNotFoundException("Invalid verification code");
         }
 
