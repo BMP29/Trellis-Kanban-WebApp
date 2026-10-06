@@ -34,8 +34,8 @@ public class AuthServiceTest {
     @Transactional
     @Test
     public void registerTest_GeneratesVerificationCode_WhenCreatingUser() {
-        final String username = "usert";
-        final String password = "pwdt";
+        final String username = "userteste";
+        final String password = "Pwdt@123456";
         final String email = "mail@email.com";
 
         UserRegistrationRequest data = new UserRegistrationRequest(username, password, email);
@@ -57,7 +57,7 @@ public class AuthServiceTest {
         User existingUser = new User();
         existingUser.setUsername("existing");
         existingUser.setEmail("mail@email.com");
-        existingUser.setPassword("password");
+        existingUser.setPassword("Pwdt@123456");
         existingUser.setPfpPath("./");
         existingUser.setEnabled(false);
 
@@ -65,8 +65,8 @@ public class AuthServiceTest {
 
         UserRegistrationRequest data =
                 new UserRegistrationRequest(
-                        "newuser",
-                        "password",
+                        "newusername",
+                        "Pwdt@123456",
                         "mail@email.com"
                 );
 
@@ -82,14 +82,14 @@ public class AuthServiceTest {
         User existingUser = new User();
         existingUser.setUsername("existing");
         existingUser.setEmail("mail@email.com");
-        existingUser.setPassword("password");
+        existingUser.setPassword("Pwdt@123456");
         existingUser.setPfpPath("./");
         existingUser.setEnabled(false);
 
         userRepository.save(existingUser);
 
         UserRegistrationRequest data =
-                new UserRegistrationRequest("existing", "password", "newmail@email.com");
+                new UserRegistrationRequest("existing", "Pwdt@123456", "newmail@email.com");
 
         assertThrows(
                 UsernameAlreadyInUseException.class,
