@@ -10,16 +10,19 @@ import com.example.auth_server.repository.VerificationCodeRepository;
 import com.example.auth_server.service.IAuthService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@Validated
 @AllArgsConstructor
 public class AuthServiceImpl implements IAuthService {
 
@@ -30,7 +33,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     @Override
-    public void register(UserRegistrationRequest data) {
+    public void register(@Valid UserRegistrationRequest data) {
         if(userRepository.existsByEmail(data.email())) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
