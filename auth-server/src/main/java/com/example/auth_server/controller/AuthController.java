@@ -37,9 +37,14 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/password/request")
-    public void requestDeletion(@AuthenticationPrincipal User user) {
-        authService.sendDeletionCode(user);
+    @PostMapping("/password/change-request")
+    public ResponseEntity<Void> requestPasswordChange(@AuthenticationPrincipal Jwt jwt) {
+        authService.sendVerificationEmail(
+                jwt.getSubject(),
+                VerificationCodeType.PASSWORD_CHANGE
+        );
+
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/username/request")
