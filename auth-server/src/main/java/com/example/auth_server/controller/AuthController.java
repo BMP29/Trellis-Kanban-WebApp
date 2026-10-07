@@ -87,4 +87,14 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PatchMapping("/email")
+    public ResponseEntity<Void> updateEmail(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody ChangeEmailRequest request
+    ) {
+        authService.updateEmail(jwt.getSubject(), request);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }
