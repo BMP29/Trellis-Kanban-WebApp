@@ -111,5 +111,30 @@ public class AuthServiceTest {
         );
     }
 
+    @Test
+    @Transactional
+    void updateEmail_ThrowsException_WhenEmailAlreadyExists() {
+        final String username = "userteste";
+        final String password = "Pwdt@123456";
+        final String email = "mail@email.com";
 
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setPfpPath("./");
+        user.setEnabled(true);
+
+        userRepository.save(user);
+
+        ChangeEmailRequest request = new ChangeEmailRequest(
+                email,
+                "123456" //it does not matter the value, the email is always checked first
+        );
+
+        assertThrows(
+                EmailAlreadyInUseException.class,
+                () -> authService.updateEmail(username, request)
+        );
+    }
 }
