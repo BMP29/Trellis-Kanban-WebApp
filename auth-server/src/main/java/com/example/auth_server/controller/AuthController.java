@@ -70,7 +70,7 @@ public class AuthController {
     @PatchMapping("/password")
     public ResponseEntity<Void> updatePassword(
             @AuthenticationPrincipal User user,
-            @RequestBody ChangePasswordRequest request
+            @Valid @RequestBody ChangePasswordRequest request
     ) {
         authService.updatePassword(user.getId(), request);
 
