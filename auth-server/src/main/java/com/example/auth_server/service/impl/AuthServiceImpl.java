@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -171,16 +172,30 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     @Override
-    public void updateEmail(UUID userId, String newEmail) {
-        User user = userRepository.findById(userId)
+    public void updateEmail(String username, ChangeEmailRequest request) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(UserNotFoundException::new);
 
-        String normalizedEmail = newEmail.toLowerCase();
+        String normalizedEmail = request.newEmail().toLowerCase(Locale.ROOT);
 
-        if (userRepository.existsByEmail(normalizedEmail)) {
+        if(userRepository.existsByEmail(normalizedEmail)) {
             throw new EmailAlreadyInUseException();
         }
 
+        VerificationCode code = verificationCodeRepository
+                .findFirstByUserAndTypeAndConsumedAtIsNullOrderByExpiresAtDesc(
+                        user, VerificationCodeType.EMAIL_CHANGE)
+                .orElseThrow(VerificationCodeNotFoundException::new);
+
+        if(code.getExpiresAt().isBefore(Instant.now())) {
+            throw new ExpiredVerificationCodeException("Código de verificação expirou.");
+        }
+
+        if(!passwordEncoder.matches(request.code(), code.getCodeHash())) {
+            throw new VerificationCodeNotFoundException();
+        }
+
+        code.setConsumedAt(Instant.now());
         user.setEmail(normalizedEmail);
     }
 
