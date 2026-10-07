@@ -57,6 +57,16 @@ public class AuthController {
         return ResponseEntity.accepted().build();
     }
 
+    @PostMapping("/email/change-request")
+    public ResponseEntity<Void> requestEmailChange(@AuthenticationPrincipal Jwt jwt) {
+        authService.sendVerificationEmail(
+                jwt.getSubject(),
+                VerificationCodeType.EMAIL_CHANGE
+        );
+
+        return ResponseEntity.accepted().build();
+    }
+
     @PatchMapping("/password")
     public ResponseEntity<Void> updatePassword(
             @AuthenticationPrincipal User user,
