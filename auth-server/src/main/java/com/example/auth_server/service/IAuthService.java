@@ -1,9 +1,6 @@
 package com.example.auth_server.service;
 
-import com.example.auth_server.dto.ChangePasswordRequest;
-import com.example.auth_server.dto.ChangeUsernameRequest;
-import com.example.auth_server.dto.UserRegistrationRequest;
-import com.example.auth_server.dto.VerifyUserRequestDto;
+import com.example.auth_server.dto.*;
 import com.example.auth_server.enums.VerificationCodeType;
 import jakarta.validation.Valid;
 
@@ -17,6 +14,6 @@ public interface IAuthService {
 
     void updatePassword(UUID userId, ChangePasswordRequest request);
     void updateUsername(String username, ChangeUsernameRequest request);
-    void updateEmail(UUID userId, String newEmail);
+    void updateEmail(String username, ChangeEmailRequest request);
 
 }
