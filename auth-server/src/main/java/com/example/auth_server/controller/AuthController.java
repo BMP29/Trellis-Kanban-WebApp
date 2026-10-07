@@ -47,7 +47,7 @@ public class AuthController {
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping("/username/request")
+    @PostMapping("/username/change-request")
     public ResponseEntity<Void> requestUsernameChange(@AuthenticationPrincipal Jwt jwt) {
         authService.sendVerificationEmail(
                 jwt.getSubject(),
