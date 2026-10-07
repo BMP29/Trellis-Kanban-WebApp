@@ -1,5 +1,6 @@
 package com.example.auth_server.service;
 
+import com.example.auth_server.dto.ChangeEmailRequest;
 import com.example.auth_server.dto.UserRegistrationRequest;
 import com.example.auth_server.entity.User;
 import com.example.auth_server.enums.VerificationCodeType;
@@ -8,6 +9,7 @@ import com.example.auth_server.exception.UserNotFoundException;
 import com.example.auth_server.exception.UsernameAlreadyInUseException;
 import com.example.auth_server.repository.UserRepository;
 import com.example.auth_server.repository.VerificationCodeRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -96,4 +98,18 @@ public class AuthServiceTest {
                 () -> authService.register(data)
         );
     }
+
+    @Test
+    @Transactional
+    void register_ThrowsException_WhenPasswordDoesNotMeetConstraints() {
+        UserRegistrationRequest data =
+                new UserRegistrationRequest("existing", "password", "newmail@email.com");
+
+        assertThrows(
+                ConstraintViolationException.class,
+                () -> authService.register(data)
+        );
+    }
+
+
 }
