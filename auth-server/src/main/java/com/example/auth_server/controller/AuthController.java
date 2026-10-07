@@ -25,7 +25,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/verify")
+    @PostMapping("/account/verify")
     public ResponseEntity<Void> verifyUser(
             @AuthenticationPrincipal Jwt jwt,
             @Valid @RequestBody VerifyUserRequestDto request) {
