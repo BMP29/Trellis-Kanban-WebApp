@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface IAuthService {
     void register(@Valid UserRegistrationRequest data);
-    void verify(String username, String verificationCode);
+    void verify(String email, String verificationCode);
 
     void sendVerificationEmail(String username, VerificationCodeType type);
 
