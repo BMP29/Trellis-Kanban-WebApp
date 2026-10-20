@@ -5,6 +5,7 @@ import com.example.auth_server.entity.User;
 import com.example.auth_server.entity.VerificationCode;
 import com.example.auth_server.enums.VerificationCodeType;
 import com.example.auth_server.exception.*;
+import com.example.auth_server.repository.RoleRepository;
 import com.example.auth_server.repository.UserRepository;
 import com.example.auth_server.repository.VerificationCodeRepository;
 import com.example.auth_server.service.IAuthService;
@@ -19,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -31,6 +33,7 @@ public class AuthServiceImpl implements IAuthService {
     private VerificationCodeRepository verificationCodeRepository;
     private PasswordEncoder passwordEncoder;
     private EmailServiceImpl emailService;
+    private RoleRepository roleRepository;
 
     @Transactional
     @Override
@@ -49,6 +52,7 @@ public class AuthServiceImpl implements IAuthService {
         user.setEmail(data.email());
         user.setPfpPath("./");
         user.setEnabled(false);
+        user.setRoles(Collections.singletonList(roleRepository.findByName("ROLE_USER")));
         userRepository.save(user);
 
         sendVerificationEmail(user.getUsername(), VerificationCodeType.ACCOUNT_VERIFICATION);
