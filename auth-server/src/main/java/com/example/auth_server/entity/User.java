@@ -7,12 +7,11 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -60,7 +59,25 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+
+        if(roles != null) {
+            for(Role role : roles) {
+               authorities.add(
+                       new SimpleGrantedAuthority(role.getName())
+               );
+
+               if(role.getPrivileges() != null) {
+                   for(Privilege privilege : role.getPrivileges()) {
+                       authorities.add(
+                               new SimpleGrantedAuthority(privilege.getName())
+                       );
+                   }
+               }
+            }
+        }
+
+        return authorities;
     }
 
     @Override
