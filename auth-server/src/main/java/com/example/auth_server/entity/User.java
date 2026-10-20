@@ -29,14 +29,12 @@ public class User implements UserDetails {
     @NotBlank
     @Column(name = "username", updatable = true, nullable = false, unique = true)
     private String username;
-    @NotBlank
-    @Column(name = "password", updatable = true, nullable = false)
+    @Column(name = "password")
     private String password;
     @NotBlank
     @Column(name = "email", updatable = true, nullable = false, unique = true)
     private String email;
-    @NotBlank
-    @Column(name = "pfpPath", updatable = true, nullable = false)
+    @Column(name = "pfp_path")
     private String pfpPath;
 
     @NotNull
@@ -48,7 +46,7 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private Instant lastUpdateAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(
