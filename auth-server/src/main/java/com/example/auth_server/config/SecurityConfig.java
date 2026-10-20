@@ -156,7 +156,7 @@ public class SecurityConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient oidcClient = RegisteredClient.withId("auth-server-key")
                 .clientId("oidc-client")
                 .clientSecret(passwordEncoder().encode("secret"))
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
