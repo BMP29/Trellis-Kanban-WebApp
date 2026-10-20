@@ -186,6 +186,48 @@ public class SecurityConfig {
     }
 
     @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
+        return context -> {
+            if (!OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
+                return;
+            }
+
+            Authentication authentication = context.getPrincipal();
+            Object principal = authentication.getPrincipal();
+
+            User user;
+            if (principal instanceof AppOidcUser googleUser) {
+                user = googleUser.getUser();
+            } else if (principal instanceof User appUser) {
+                user = appUser;
+            } else {
+                throw new IllegalStateException(
+                        "Unexpected principal type: " + principal.getClass().getName());
+            }
+
+            Set<String> roles = AuthorityUtils.authorityListToSet(user.getAuthorities())
+                    .stream()
+                    .map(role -> role.replaceFirst("^ROLE_", ""))
+                    .collect(Collectors.toUnmodifiableSet());
+
+            context.getClaims().claims(claims -> {
+                claims.put("auth-server-id", user.getId().toString());
+                claims.put("roles", roles);
+            });
+        };
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter granted = new JwtGrantedAuthoritiesConverter();
+        granted.setAuthoritiesClaimName("roles");
+        granted.setAuthorityPrefix("");
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(granted);
+        return converter;
+    }
+
+    @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
     }
