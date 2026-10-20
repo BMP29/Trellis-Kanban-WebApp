@@ -26,11 +26,10 @@ public class AuthController {
     }
 
     @PostMapping("/account/verify")
-    public ResponseEntity<Void> verifyUser(
-            @AuthenticationPrincipal Jwt jwt,
-            @Valid @RequestBody VerifyUserRequestDto request) {
+    public ResponseEntity<Void> verifyUser(@Valid @RequestBody
+                                               VerifyUserRequestDto request) {
         this.authService.verify(
-                jwt.getSubject(),
+                request.email(),
                 request.verificationCode()
         );
 
