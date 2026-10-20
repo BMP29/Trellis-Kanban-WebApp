@@ -60,9 +60,9 @@ public class AuthServiceImpl implements IAuthService {
 
     @Transactional
     @Override
-    public void verify(String username, String verificationCode) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Usuário com username: " + username + " não encontrado."));
+    public void verify(String email, String verificationCode) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Usuário com email: " + email + " não encontrado."));
 
         VerificationCode code = verificationCodeRepository
                 .findFirstByUserAndTypeAndConsumedAtIsNullOrderByExpiresAtDesc(
