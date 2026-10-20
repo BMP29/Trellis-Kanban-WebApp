@@ -8,6 +8,4 @@ import java.util.UUID;
 public interface IUserService {
     public UserDto getUser();
     public UserDto updateUser();
-    public void sendDeletionCode(User user);
-    public void deleteUser(User user, String code);
 }
